@@ -1,23 +1,14 @@
-import pinyin, { Options } from "pinyin";
 import { distance } from "fastest-levenshtein";
 import { entries } from "lodash";
-
-type PinyinResult = ReturnType<typeof pinyin>;
-
-export const pinyinOptions: Options = {
-  style: 0,
-  heteronym: true,
-  compact: true,
-  segment: false,
-};
+import { pinyin } from "./pinyin";
 
 export const chineseFuzzyEqual = (
-  a: string | PinyinResult,
-  b: string | PinyinResult,
-  threshold = 0.2,
+  a: string | string[][],
+  b: string | string[][],
+  threshold = 0.15,
 ) => {
-  const as = typeof a === "string" ? pinyin(a, pinyinOptions) : a;
-  const bs = typeof b === "string" ? pinyin(b, pinyinOptions) : b;
+  const as = typeof a === "string" ? pinyin(a) : a;
+  const bs = typeof b === "string" ? pinyin(b) : b;
   const allRatio = as.flatMap((v) =>
     bs.map((u) => {
       const vs = v.join(" ");

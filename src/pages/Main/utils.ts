@@ -1,7 +1,7 @@
 import { escape, every } from "lodash";
-import pinyin from "pinyin";
-import { chineseFuzzyEqual, pinyinOptions } from "src/utils";
+import { chineseFuzzyEqual } from "src/utils";
 import { Typo } from "./Article";
+import { pinyin } from "src/utils/pinyin";
 
 export const findTyposOfArticle = (article: string, refWord: string) => {
   const wLen = refWord.length;
@@ -12,7 +12,7 @@ export const findTyposOfArticle = (article: string, refWord: string) => {
       acc[curr] = true;
       return acc;
     }, {});
-  const refWordPinyin = pinyin(refWord, pinyinOptions);
+  const refWordPinyin = pinyin(refWord);
 
   for (let i = 0; i <= article.length - wLen + 2; i++) {
     const compareWord = article.slice(i, i + wLen);

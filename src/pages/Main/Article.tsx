@@ -60,6 +60,8 @@ const Article: React.FC = () => {
 
   const handleComparison = () => {
     if (!quill) return;
+    quill.removeFormat(0, quill.getLength());
+
     const article = quill.getText();
     const typos = findTyposOfArticle(article, "愛麗娜");
     typos.forEach((typo) => {
