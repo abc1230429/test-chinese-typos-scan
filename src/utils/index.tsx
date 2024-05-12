@@ -1,10 +1,15 @@
-import pinyin from "pinyin";
+import pinyin, { Options } from "pinyin";
 import { distance } from "fastest-levenshtein";
 import { entries } from "lodash";
 
 type PinyinResult = ReturnType<typeof pinyin>;
 
-export const pinyinOptions = { style: 0, heteronym: true, compact: true };
+export const pinyinOptions: Options = {
+  style: 0,
+  heteronym: true,
+  compact: true,
+  segment: false,
+};
 
 export const chineseFuzzyEqual = (
   a: string | PinyinResult,

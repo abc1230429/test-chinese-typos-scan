@@ -1,13 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  chineseFuzzyEqual,
-  highlightTypoCharJsx,
-  pinyinOptions,
-  wrapHtmlString,
-} from "src/utils";
+import { highlightTypoCharJsx } from "src/utils";
 import TyposModal from "./TyposModal";
-import { escape, every } from "lodash";
-import pinyin from "pinyin";
+import Quill from "quill";
+import "./quill.ts";
+import { findTyposOfArticle, toggleHighlightClasses } from "./utils.ts";
+import { findLastIndex } from "lodash";
 
 export type Typo = {
   index: number;
@@ -16,95 +13,73 @@ export type Typo = {
   refWord: string;
 };
 
-const highlight = (word: string, id: string) =>
-  wrapHtmlString(word, "span", {
-    id,
-    class:
-      "typo-highlight badge badge-error px-1 mx-1 rounded-sm whitespace-pre-wrap",
-  });
-
-const findTyposOfArticle = (article: string, refWord: string) => {
-  const wLen = refWord.length;
-  let articleWithHtml = "";
-  const typos: Typo[] = [];
-  const refWordDict = refWord
-    .split("")
-    .reduce<{ [key: string]: boolean }>((acc, curr) => {
-      acc[curr] = true;
-      return acc;
-    }, {});
-  const refWordPinyin = pinyin(refWord, pinyinOptions);
-
-  for (let i = 0; i <= article.length - wLen + 2; i++) {
-    const compareWord = article.slice(i, i + wLen);
-    if (compareWord === refWord) {
-      articleWithHtml += escape(refWord);
-      i += wLen - 1;
-      continue;
-    }
-
-    const isValid = !compareWord.includes("\n");
-    const isWrongOrder =
-      isValid && wLen >= 3 && every(compareWord, (c) => refWordDict[c]);
-    const isFuzzyEqual =
-      isValid && chineseFuzzyEqual(compareWord, refWordPinyin);
-    if (isWrongOrder || isFuzzyEqual) {
-      const id = `typo-${i}`;
-      const cleanCompareWord = escape(compareWord);
-      articleWithHtml += highlight(cleanCompareWord, id);
-      typos.push({ index: i, word: cleanCompareWord, id, refWord });
-      i += wLen - 1;
-    } else {
-      articleWithHtml += escape(article[i]);
-    }
-  }
-  return { articleWithHtml, typos };
-};
-
 const Article: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
+  const touchedRef = useRef<boolean>(false);
   const [typos, setTypos] = useState<Typo[]>([]);
   const [index, setIndex] = useState(0);
-
-  const currTypo = typos[index];
+  const [quill, setQuill] = useState<Quill | null>(null);
 
   useEffect(() => {
-    if (!currTypo || !ref.current) return;
+    if (!ref.current) return;
+    const quillInst = new Quill(ref.current, {
+      placeholder: "請貼上你的文章",
+    });
+    setQuill(quillInst);
+    const parentHeight = ref.current.parentElement?.scrollHeight || 500;
+    ref.current.style.height = `calc(${parentHeight}px - 1rem)`;
+  }, []);
 
+  useEffect(() => {
+    if (!quill) return;
+    quill.off("selection-change");
+    quill.on("selection-change", ({ index: selectIndex }) => {
+      const nearest = findLastIndex(typos, (typo) => typo.index < selectIndex);
+      setIndex(nearest);
+      touchedRef.current = true;
+    });
+  }, [typos]);
+
+  const goToIndex = (newIndex: number) => {
+    touchedRef.current = false;
+    const typo = typos[newIndex];
+    if (!typo || !ref.current || !quill) return;
+    quill.setSelection(typo.index, "silent");
+
+    // cleanup previous color
     ref.current
       .querySelectorAll<HTMLSpanElement>("span.typo-highlight.badge-warning")
-      .forEach((v) => {
-        v.classList.remove("badge-warning");
-        v.classList.add("badge-error");
-      });
+      .forEach(toggleHighlightClasses);
 
-    const newTarget = ref.current.querySelector(`#${currTypo.id}`);
+    // set color and scroll
+    const newTarget = ref.current.querySelector<HTMLSpanElement>(`#${typo.id}`);
     if (!newTarget) return;
-    newTarget.classList.remove("badge-error");
-    newTarget.classList.add("badge-warning");
+    toggleHighlightClasses(newTarget);
     newTarget.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [index, currTypo]);
+  };
 
   const handleComparison = () => {
-    if (!ref.current) return;
-    const article = ref.current.innerText;
-    const result = findTyposOfArticle(article, "愛麗娜");
-    ref.current.innerHTML = result.articleWithHtml;
-    if (!result.typos.length) alert("沒有找到錯字");
-    setTypos(result.typos);
+    if (!quill) return;
+    const article = quill.getText();
+    const typos = findTyposOfArticle(article, "愛麗娜");
+    typos.forEach((typo) => {
+      quill.formatText(
+        typo.index,
+        typo.word.length,
+        "customHighlight",
+        typo.id,
+      );
+    });
+    if (!typos.length) alert("沒有找到錯字");
+    setTypos(typos);
+    setIndex(-1);
   };
 
   return (
-    <div className="flex h-full w-full flex-col">
-      <label className="form-control flex-grow pb-4">
-        <div
-          ref={ref}
-          contentEditable
-          // @ts-expect-error: placeholder
-          placeholder="請貼上你的文章"
-          className="textarea textarea-bordered h-96 flex-grow resize-y overflow-auto whitespace-pre-wrap empty:before:content-[attr(placeholder)]"
-        />
-      </label>
+    <div className="flex h-full flex-col">
+      <div className="h-full flex-grow pb-4">
+        <div ref={ref} className="h-full" />
+      </div>
 
       <div className="flex w-full justify-between">
         <div className="join">
@@ -113,15 +88,19 @@ const Article: React.FC = () => {
               <button
                 disabled={index < 1}
                 className="btn join-item btn-neutral"
-                onClick={() => setIndex(index - 1)}
+                onClick={() => {
+                  const newIndex = touchedRef.current ? index : index - 1;
+                  setIndex(newIndex);
+                  goToIndex(newIndex);
+                }}
               >
                 «
               </button>
               <button className="btn join-item btn-neutral">
                 <span>
                   {highlightTypoCharJsx(
-                    currTypo?.word || "",
-                    currTypo?.refWord || "",
+                    typos[index]?.word || "",
+                    typos[index]?.refWord || "",
                   )}
                 </span>
                 <span>
@@ -131,7 +110,11 @@ const Article: React.FC = () => {
               <button
                 disabled={index >= typos.length - 1}
                 className="btn join-item btn-neutral"
-                onClick={() => setIndex(index + 1)}
+                onClick={() => {
+                  const newIndex = index + 1;
+                  setIndex(newIndex);
+                  goToIndex(newIndex);
+                }}
               >
                 »
               </button>

@@ -1,0 +1,3 @@
+.ql-editor.ql-editor.ql-editor {
+  @apply textarea h-full p-4 overflow-auto;
+}

@@ -13,6 +13,7 @@
     "fastest-levenshtein": "^1.0.16",
     "lodash": "^4.17.21",
     "pinyin": "4.0.0-alpha.0",
+    "quill": "^2.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "segmentit": "^2.0.3"
@@ -34,6 +35,7 @@
     "postcss": "^8.4.38",
     "prettier": "3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.14",
+    "rollup-plugin-visualizer": "^5.12.0",
     "tailwindcss": "^3.4.3",
     "typescript": "^5.2.2",
     "vite": "^5.2.0"

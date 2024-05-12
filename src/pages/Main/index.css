@@ -1,0 +1,3 @@
+.main-container {
+  @apply mx-auto grid h-svh max-w-4xl grid-rows-[auto_auto_1fr] p-8;
+}
