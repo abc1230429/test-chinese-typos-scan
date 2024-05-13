@@ -1,8 +1,8 @@
 import { countBy, entries } from "lodash";
-import { Typo } from "./Article";
 import { ClipboardDocument } from "src/icons";
 import { memo } from "react";
 import { highlightTypoCharJsx } from "src/utils";
+import { Typo } from "src/types";
 
 const TyposModal: React.FC<{ typos: Typo[] }> = memo(({ typos }) => {
   return (

@@ -3,16 +3,15 @@ import { highlightTypoCharJsx } from "src/utils";
 import TyposModal from "./TyposModal";
 import Quill from "quill";
 import "./quill.ts";
-import { findTyposOfArticle, toggleHighlightClasses } from "./utils.ts";
 import { findLastIndex } from "lodash";
 import { setupQuill } from "./quill.ts";
 import { useTargetNounStore } from "src/stores/index.ts";
+import { findTyposAsync } from "src/workers/index.ts";
+import { Typo } from "src/types/index.js";
 
-export type Typo = {
-  index: number;
-  word: string;
-  id: string;
-  refWord: string;
+const toggleHighlightClasses = (ele: HTMLSpanElement) => {
+  ele.classList.toggle("badge-error");
+  ele.classList.toggle("badge-warning");
 };
 
 const Article: React.FC = () => {
@@ -22,6 +21,7 @@ const Article: React.FC = () => {
   const [index, setIndex] = useState(0);
   const [quill, setQuill] = useState<Quill | null>(null);
   const nouns = useTargetNounStore((state) => state.nouns);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -35,6 +35,7 @@ const Article: React.FC = () => {
   useEffect(() => {
     const resize = () => {
       if (!ref.current) return;
+      ref.current.style.height = '500px'
       const parentHeight = ref.current.parentElement?.scrollHeight || 500;
       ref.current.style.height = `calc(${parentHeight}px - 1rem)`;
     };
@@ -75,12 +76,13 @@ const Article: React.FC = () => {
     newTarget.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
-  const handleComparison = () => {
+  const handleComparison = async () => {
     if (!quill) return;
+    setLoading(true);
     quill.removeFormat(0, quill.getLength());
 
     const article = quill.getText();
-    const typos = findTyposOfArticle(article, nouns[0]);
+    const typos = await findTyposAsync(article, nouns[0]);
     typos.forEach((typo) => {
       quill.formatText(
         typo.index,
@@ -92,6 +94,7 @@ const Article: React.FC = () => {
     if (!typos.length) alert("沒有找到錯字");
     setTypos(typos);
     setIndex(-1);
+    setLoading(false);
   };
 
   return (
@@ -144,7 +147,7 @@ const Article: React.FC = () => {
         <button
           className="btn btn-primary text-primary-content"
           onClick={handleComparison}
-          disabled={!nouns.length}
+          disabled={!nouns.length || loading}
         >
           比對
         </button>

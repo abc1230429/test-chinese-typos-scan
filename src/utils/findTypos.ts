@@ -1,9 +1,9 @@
 import { escape, every } from "lodash";
+import { Typo } from "src/types";
 import { chineseFuzzyEqual } from "src/utils";
-import { Typo } from "./Article";
 import { pinyin } from "src/utils/pinyin";
 
-export const findTyposOfArticle = (article: string, refWord: string) => {
+export const findTypos = (article: string, refWord: string) => {
   const wLen = refWord.length;
   const typos: Typo[] = [];
   const refWordDict = refWord
@@ -41,9 +41,4 @@ export const findTyposOfArticle = (article: string, refWord: string) => {
     }
   }
   return typos;
-};
-
-export const toggleHighlightClasses = (ele: HTMLSpanElement) => {
-  ele.classList.toggle("badge-error");
-  ele.classList.toggle("badge-warning");
 };

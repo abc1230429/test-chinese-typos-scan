@@ -1,7 +1,6 @@
-import { Options as PinyinTypeOptions } from "pinyin";
-
-declare module "pinyin" {
-  interface Options extends PinyinTypeOptions {
-    compact?: boolean;
-  }
-}
+export type Typo = {
+  index: number;
+  word: string;
+  id: string;
+  refWord: string;
+};
