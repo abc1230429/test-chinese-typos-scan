@@ -3,7 +3,7 @@ import dict from "./dict.json";
 export const getPinyins = (cChar: string) => {
   const unicode = cChar.charCodeAt(0).toString(16);
   // @ts-expect-error: dict unicode
-  const pinyins = (dict[unicode] as string[]) || [cChar.repeat(3)];
+  const pinyins = (dict[unicode] as string[]) || [cChar];
   return pinyins;
 };
 

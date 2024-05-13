@@ -1,3 +1,4 @@
+import Setting from "../Setting";
 import Article from "./Article";
 import TargetWordsForm from "./TargetWordsForm";
 import "./index.css";
@@ -5,8 +6,13 @@ import "./index.css";
 const Main: React.FC = () => {
   return (
     <div className="main-container">
-      <div className="card flex rounded-box bg-base-300 px-8 py-4">
+      <div className="flex w-full items-center pb-6">
+        <h1 className="px-6 text-xl">名字錯字檢查</h1>
+        <span>依照拼音搜尋小說中可能的錯字</span>
+      </div>
+      <div className="card flex flex-row justify-between rounded-box bg-base-300 px-8 py-4">
         <TargetWordsForm />
+        <Setting />
       </div>
       <div className="divider"></div>
       <div className="card h-full rounded-box bg-base-300 px-8 py-4">

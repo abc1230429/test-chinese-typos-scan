@@ -5,6 +5,8 @@ import Quill from "quill";
 import "./quill.ts";
 import { findTyposOfArticle, toggleHighlightClasses } from "./utils.ts";
 import { findLastIndex } from "lodash";
+import { setupQuill } from "./quill.ts";
+import { useTargetNounStore } from "src/stores/index.ts";
 
 export type Typo = {
   index: number;
@@ -19,25 +21,40 @@ const Article: React.FC = () => {
   const [typos, setTypos] = useState<Typo[]>([]);
   const [index, setIndex] = useState(0);
   const [quill, setQuill] = useState<Quill | null>(null);
+  const nouns = useTargetNounStore((state) => state.nouns);
 
   useEffect(() => {
     if (!ref.current) return;
-    const quillInst = new Quill(ref.current, {
-      placeholder: "請貼上你的文章",
-    });
+    const quillInst = setupQuill(ref.current);
     setQuill(quillInst);
-    const parentHeight = ref.current.parentElement?.scrollHeight || 500;
-    ref.current.style.height = `calc(${parentHeight}px - 1rem)`;
+    quillInst.on("editor-change", () => {
+      if (quillInst.editor.isBlank()) setTypos([]);
+    });
   }, []);
 
   useEffect(() => {
+    const resize = () => {
+      if (!ref.current) return;
+      const parentHeight = ref.current.parentElement?.scrollHeight || 500;
+      ref.current.style.height = `calc(${parentHeight}px - 1rem)`;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
+  }, [quill]);
+
+  useEffect(() => {
     if (!quill) return;
-    quill.off("selection-change");
-    quill.on("selection-change", ({ index: selectIndex }) => {
-      const nearest = findLastIndex(typos, (typo) => typo.index < selectIndex);
+    const setIndexOnSelect = (event: { index: number }) => {
+      if (!event) return;
+      const nearest = findLastIndex(typos, (typo) => typo.index < event.index);
       setIndex(nearest);
       touchedRef.current = true;
-    });
+    };
+    quill.on("selection-change", setIndexOnSelect);
+    return () => {
+      quill.off("selection-change", setIndexOnSelect);
+    };
   }, [typos]);
 
   const goToIndex = (newIndex: number) => {
@@ -63,7 +80,7 @@ const Article: React.FC = () => {
     quill.removeFormat(0, quill.getLength());
 
     const article = quill.getText();
-    const typos = findTyposOfArticle(article, "愛麗娜");
+    const typos = findTyposOfArticle(article, nouns[0]);
     typos.forEach((typo) => {
       quill.formatText(
         typo.index,
@@ -124,7 +141,11 @@ const Article: React.FC = () => {
           )}
         </div>
         <TyposModal typos={typos} />
-        <button className="btn btn-neutral" onClick={handleComparison}>
+        <button
+          className="btn btn-primary text-primary-content"
+          onClick={handleComparison}
+          disabled={!nouns.length}
+        >
           比對
         </button>
       </div>

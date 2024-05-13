@@ -13,19 +13,26 @@ export const findTyposOfArticle = (article: string, refWord: string) => {
       return acc;
     }, {});
   const refWordPinyin = pinyin(refWord);
+  const regex = /[，。「」\n]/;
 
-  for (let i = 0; i <= article.length - wLen + 2; i++) {
-    const compareWord = article.slice(i, i + wLen);
+  for (let i = 0; i < article.length; i++) {
+    const compareWord = article.slice(i, i + wLen).trim();
+
+    if (
+      !compareWord ||
+      compareWord.length !== wLen ||
+      regex.test(compareWord)
+    ) {
+      continue;
+    }
+
     if (compareWord === refWord) {
       i += wLen - 1;
       continue;
     }
 
-    const isValid = !compareWord.includes("\n");
-    const isWrongOrder =
-      isValid && wLen >= 3 && every(compareWord, (c) => refWordDict[c]);
-    const isFuzzyEqual =
-      isValid && chineseFuzzyEqual(compareWord, refWordPinyin);
+    const isWrongOrder = wLen >= 3 && every(compareWord, (c) => refWordDict[c]);
+    const isFuzzyEqual = chineseFuzzyEqual(compareWord, refWordPinyin);
     if (isWrongOrder || isFuzzyEqual) {
       const id = `typo-${i}`;
       const cleanCompareWord = escape(compareWord);
@@ -37,11 +44,6 @@ export const findTyposOfArticle = (article: string, refWord: string) => {
 };
 
 export const toggleHighlightClasses = (ele: HTMLSpanElement) => {
-  if (ele.className.includes("badge-error")) {
-    ele.classList.remove("badge-error");
-    ele.classList.add("badge-warning");
-  } else if (ele.className.includes("badge-warning")) {
-    ele.classList.remove("badge-warning");
-    ele.classList.add("badge-error");
-  }
+  ele.classList.toggle("badge-error");
+  ele.classList.toggle("badge-warning");
 };

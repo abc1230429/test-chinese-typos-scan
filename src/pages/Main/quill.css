@@ -1,3 +1,9 @@
+@import "quill/dist/quill.core.css";
+
 .ql-editor.ql-editor.ql-editor {
-  @apply textarea h-full p-4 overflow-auto;
+  @apply textarea h-full overflow-auto p-4;
+}
+
+.ql-editor.ql-editor.ql-editor.ql-blank::before {
+  @apply not-italic text-inherit;
 }

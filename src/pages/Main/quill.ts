@@ -20,3 +20,15 @@ class CustomHighlight extends Inline {
 }
 
 Quill.register(CustomHighlight);
+
+export const setupQuill = (dom: HTMLDivElement) => {
+  const quillInst = new Quill(dom, {
+    placeholder: "請貼上你的文章",
+  });
+  quillInst.scroll.domNode.addEventListener("compositionstart", () => {
+    if (quillInst.editor.isBlank()) {
+      quillInst.root.classList.remove("ql-blank");
+    }
+  });
+  return quillInst;
+};
