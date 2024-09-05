@@ -35,7 +35,7 @@ const Article: React.FC = () => {
   useEffect(() => {
     const resize = () => {
       if (!ref.current) return;
-      ref.current.style.height = '500px'
+      ref.current.style.height = "500px";
       const parentHeight = ref.current.parentElement?.scrollHeight || 500;
       ref.current.style.height = `calc(${parentHeight}px - 1rem)`;
     };
@@ -82,7 +82,18 @@ const Article: React.FC = () => {
     quill.removeFormat(0, quill.getLength());
 
     const article = quill.getText();
-    const typos = await findTyposAsync(article, nouns[0]);
+
+    const typos: Typo[] = [];
+    for (const noun of nouns) {
+      try {
+        const newTypos = await findTyposAsync(article, noun);
+        typos.push(...newTypos);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    typos.sort((a, b) => a.index - b.index);
     typos.forEach((typo) => {
       quill.formatText(
         typo.index,
@@ -104,7 +115,7 @@ const Article: React.FC = () => {
       </div>
 
       <div className="flex w-full justify-between">
-        <div className="join">
+        <div className="join flex-1">
           {!!typos.length && (
             <>
               <button
@@ -143,14 +154,18 @@ const Article: React.FC = () => {
             </>
           )}
         </div>
-        <TyposModal typos={typos} />
-        <button
-          className="btn btn-primary text-primary-content"
-          onClick={handleComparison}
-          disabled={!nouns.length || loading}
-        >
-          比對
-        </button>
+        <div className="flex flex-1 justify-center">
+          <TyposModal typos={typos} />
+        </div>
+        <div className="flex flex-1 justify-end">
+          <button
+            className="btn btn-primary text-primary-content"
+            onClick={handleComparison}
+            disabled={!nouns.length || loading}
+          >
+            比對
+          </button>
+        </div>
       </div>
     </div>
   );
