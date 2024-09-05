@@ -1,48 +1,16 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useTargetNounStore } from "src/stores";
-
-const DisplayBox: React.FC = () => {
-  const [shouldEllipsis, setShouldEllipsis] = useState(false);
-  const { nouns, removeNoun } = useTargetNounStore();
-  const ref = useRef<HTMLDivElement>(null);
-  useLayoutEffect(() => {
-    if (!ref.current) return;
-    setShouldEllipsis(ref.current.scrollWidth > ref.current.clientWidth);
-  }, [nouns]);
-  return (
-    <div
-      ref={ref}
-      className="relative flex w-60 items-center gap-1 overflow-hidden"
-    >
-      {nouns.map((noun) => (
-        <button
-          key={noun}
-          className="btn btn-ghost px-2"
-          onClick={() => {
-            const result = confirm(`要移除名字：${noun} 嗎？`);
-            if (result) removeNoun(noun);
-          }}
-        >
-          {noun}
-        </button>
-      ))}
-      {shouldEllipsis && (
-        <div className="pointer-events-none absolute bottom-0 left-1/2 right-0 top-0 bg-gradient-to-r from-transparent to-base-300" />
-      )}
-    </div>
-  );
-};
 
 const TargetWordsForm = () => {
   const [value, setValue] = useState("");
-  const addNoun = useTargetNounStore((state) => state.addNoun);
+  const { nouns, addNoun, removeNoun } = useTargetNounStore();
   const handleConfirm = () => {
     const noun = value.trim();
     if (noun) addNoun(noun);
     setValue("");
   };
   return (
-    <div className="flex gap-2">
+    <>
       <label className="input input-bordered flex items-center gap-2">
         <input
           type="text"
@@ -71,8 +39,22 @@ const TargetWordsForm = () => {
           </svg>
         </button>
       </label>
-      <DisplayBox />
-    </div>
+      <div className="relative flex w-[calc(100%-250px)] flex-1 items-center gap-1 overflow-hidden px-2">
+        {nouns.map((noun) => (
+          <button
+            key={noun}
+            className="btn btn-ghost px-2"
+            onClick={() => {
+              const result = confirm(`要移除名字：${noun} 嗎？`);
+              if (result) removeNoun(noun);
+            }}
+          >
+            {noun}
+          </button>
+        ))}
+        <div className="pointer-events-none absolute right-0 w-10 bg-gradient-to-r from-transparent to-base-300" />
+      </div>
+    </>
   );
 };
 

@@ -8,9 +8,9 @@ const Main: React.FC = () => {
     <div className="main-container">
       <div className="flex w-full items-center pb-6">
         <h1 className="px-6 text-xl">名字錯字檢查</h1>
-        <span>依照拼音搜尋小說中可能的錯字</span>
+        <span>依照拼音搜尋文本中可能的專有名詞錯字</span>
       </div>
-      <div className="card flex flex-row justify-between rounded-box bg-base-300 px-8 py-4">
+      <div className="card flex flex-row justify-between overflow-hidden rounded-box bg-base-300 px-8 py-4">
         <TargetWordsForm />
         <Setting />
       </div>

@@ -9,7 +9,7 @@ const Setting: React.FC = () => {
   };
 
   return (
-    <>
+    <div>
       <button className="btn btn-neutral" onClick={openModal}>
         更多設定
       </button>
@@ -49,7 +49,7 @@ const Setting: React.FC = () => {
               </div>
             </div>
             <div className="flex w-full">
-              <InputBlock label="比對詞條" />
+              <InputBlock label="目標詞條" />
               <div className="divider divider-horizontal">
                 <div>
                   {"排除右側".split("").map((c) => (
@@ -68,7 +68,7 @@ const Setting: React.FC = () => {
           </form>
         </div>
       </dialog>
-    </>
+    </div>
   );
 };
 
