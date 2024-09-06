@@ -3,6 +3,9 @@ import { Typo } from "src/types";
 import { chineseFuzzyEqual } from "src/utils";
 import { pinyin } from "src/utils/pinyin";
 
+const hasIntersection = (str1: string, str2: string) =>
+  str1.split("").some((char) => str2.includes(char));
+
 export const findTypos = (article: string, refWord: string) => {
   const wLen = refWord.length;
   const typos: Typo[] = [];
@@ -28,6 +31,11 @@ export const findTypos = (article: string, refWord: string) => {
 
     if (compareWord === refWord) {
       i += wLen - 1;
+      continue;
+    }
+
+    // 如果名字小於三個字，但每個字都不一樣，就算了，否則會找到太多無關的
+    if (wLen < 3 && !hasIntersection(compareWord, refWord)) {
       continue;
     }
 
