@@ -4,6 +4,10 @@
   @apply textarea h-full overflow-auto p-4;
 }
 
+.ql-editor.ql-editor.ql-editor p {
+  @apply mb-4;
+}
+
 .ql-editor.ql-editor.ql-editor.ql-blank::before {
   @apply not-italic text-inherit;
 }

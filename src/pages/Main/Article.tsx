@@ -3,9 +3,13 @@ import { highlightTypoCharJsx } from "src/utils";
 import TyposModal from "./TyposModal";
 import Quill from "quill";
 import "./quill.ts";
-import { findLastIndex } from "lodash";
+import { findIndex } from "lodash";
 import { setupQuill } from "./quill.ts";
-import { useTargetNounStore } from "src/stores/index.ts";
+import {
+  useReservedNounStore,
+  useSettingStore,
+  useTargetNounStore,
+} from "src/stores/index.ts";
 import { findTyposAsync } from "src/workers/index.ts";
 import { Typo } from "src/types/index.js";
 
@@ -21,6 +25,8 @@ const Article: React.FC = () => {
   const [index, setIndex] = useState(0);
   const [quill, setQuill] = useState<Quill | null>(null);
   const nouns = useTargetNounStore((state) => state.nouns);
+  const reservedNouns = useReservedNounStore((state) => state.nouns);
+  const threshold = useSettingStore((state) => state.threshold);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -48,7 +54,8 @@ const Article: React.FC = () => {
     if (!quill) return;
     const setIndexOnSelect = (event: { index: number }) => {
       if (!event) return;
-      const nearest = findLastIndex(typos, (typo) => typo.index < event.index);
+      let nearest = findIndex(typos, (typo) => typo.index > event.index);
+      if (nearest === -1) nearest = typos.length - 1;
       setIndex(nearest);
       touchedRef.current = true;
     };
@@ -86,15 +93,20 @@ const Article: React.FC = () => {
     const typos: Typo[] = [];
     for (const noun of nouns) {
       try {
-        const newTypos = await findTyposAsync(article, noun);
+        const newTypos = await findTyposAsync(article, noun, { threshold });
         typos.push(...newTypos);
       } catch (err) {
         console.error(err);
       }
     }
 
-    typos.sort((a, b) => a.index - b.index);
-    typos.forEach((typo) => {
+    const validTypos = typos
+      .filter(
+        ({ word }) => !nouns.includes(word) && !reservedNouns.includes(word),
+      )
+      .sort((a, b) => a.index - b.index);
+
+    validTypos.forEach((typo) => {
       quill.formatText(
         typo.index,
         typo.word.length,
@@ -102,9 +114,9 @@ const Article: React.FC = () => {
         typo.id,
       );
     });
-    if (!typos.length) alert("沒有找到錯字");
-    setTypos(typos);
-    setIndex(-1);
+    if (!validTypos.length) alert("沒有找到錯字");
+    setTypos(validTypos);
+    setIndex(0);
     setLoading(false);
   };
 
@@ -129,7 +141,12 @@ const Article: React.FC = () => {
               >
                 «
               </button>
-              <button className="btn join-item btn-neutral">
+              <button
+                className="btn join-item btn-neutral"
+                onClick={() => {
+                  goToIndex(index);
+                }}
+              >
                 <span>
                   {highlightTypoCharJsx(
                     typos[index]?.word || "",

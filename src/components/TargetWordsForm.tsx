@@ -1,9 +1,36 @@
 import { useState } from "react";
-import { useTargetNounStore } from "src/stores";
 
-const TargetWordsForm = () => {
+export const TargetWordTags: React.FC<
+  {
+    nouns: string[];
+    removeNoun: (noun: string) => void;
+  } & React.ButtonHTMLAttributes<HTMLButtonElement>
+> = ({ nouns, removeNoun, ...buttonProps }) => {
+  return (
+    <>
+      {nouns.map((noun) => (
+        <button
+          key={noun}
+          className="btn btn-ghost px-2"
+          onClick={() => {
+            const result = confirm(`要移除名字：${noun} 嗎？`);
+            if (result) removeNoun(noun);
+          }}
+          {...buttonProps}
+        >
+          {noun}
+        </button>
+      ))}
+    </>
+  );
+};
+
+export const TargetWordsInput: React.FC<
+  {
+    addNoun: (noun: string) => void;
+  } & React.InputHTMLAttributes<HTMLInputElement>
+> = ({ addNoun, ...inputProps }) => {
   const [value, setValue] = useState("");
-  const { nouns, addNoun, removeNoun } = useTargetNounStore();
   const handleConfirm = () => {
     const noun = value.trim();
     if (noun) addNoun(noun);
@@ -21,6 +48,7 @@ const TargetWordsForm = () => {
           onKeyDown={(e) => {
             if (e.key.toLocaleUpperCase() === "ENTER") handleConfirm();
           }}
+          {...inputProps}
         />
         <button className="btn btn-circle btn-sm" onClick={handleConfirm}>
           <svg
@@ -39,23 +67,6 @@ const TargetWordsForm = () => {
           </svg>
         </button>
       </label>
-      <div className="relative flex w-[calc(100%-250px)] flex-1 items-center gap-1 overflow-hidden px-2">
-        {nouns.map((noun) => (
-          <button
-            key={noun}
-            className="btn btn-ghost px-2"
-            onClick={() => {
-              const result = confirm(`要移除名字：${noun} 嗎？`);
-              if (result) removeNoun(noun);
-            }}
-          >
-            {noun}
-          </button>
-        ))}
-        <div className="pointer-events-none absolute right-0 w-10 bg-gradient-to-r from-transparent to-base-300" />
-      </div>
     </>
   );
 };
-
-export default TargetWordsForm;

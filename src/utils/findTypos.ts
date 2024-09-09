@@ -1,12 +1,14 @@
-import { escape, every } from "lodash";
+import { escape, filter } from "lodash";
+import { defaultThreshold } from "src/constants";
 import { Typo } from "src/types";
 import { chineseFuzzyEqual } from "src/utils";
 import { pinyin } from "src/utils/pinyin";
 
-const hasIntersection = (str1: string, str2: string) =>
-  str1.split("").some((char) => str2.includes(char));
-
-export const findTypos = (article: string, refWord: string) => {
+export const findTypos = (
+  article: string,
+  refWord: string,
+  options = { threshold: defaultThreshold },
+) => {
   const wLen = refWord.length;
   const typos: Typo[] = [];
   const refWordDict = refWord
@@ -34,14 +36,16 @@ export const findTypos = (article: string, refWord: string) => {
       continue;
     }
 
-    // 如果名字小於三個字，但每個字都不一樣，就算了，否則會找到太多無關的
-    if (wLen < 3 && !hasIntersection(compareWord, refWord)) {
-      continue;
-    }
+    const sameChars = filter(compareWord, (c) => refWordDict[c]);
 
-    const isWrongOrder = wLen >= 3 && every(compareWord, (c) => refWordDict[c]);
-    const isFuzzyEqual = chineseFuzzyEqual(compareWord, refWordPinyin);
-    if (isWrongOrder || isFuzzyEqual) {
+    // 如果每個字都不一樣，就採嚴格拼音相同
+    const threshold = sameChars.length === 0 ? 0 : options.threshold;
+
+    const isWrongOrder = wLen >= 3 && sameChars.length === wLen;
+    const isFuzzyEqual = () =>
+      chineseFuzzyEqual(compareWord, refWordPinyin, threshold);
+
+    if (isWrongOrder || isFuzzyEqual()) {
       const id = `typo-${i}`;
       const cleanCompareWord = escape(compareWord);
       typos.push({ index: i, word: cleanCompareWord, id, refWord });

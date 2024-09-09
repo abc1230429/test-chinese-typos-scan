@@ -1,11 +1,12 @@
 import { distance } from "fastest-levenshtein";
 import { entries } from "lodash";
 import { pinyin } from "./pinyin";
+import { defaultThreshold } from "src/constants";
 
 export const chineseFuzzyEqual = (
   a: string | string[][],
   b: string | string[][],
-  threshold = 0.15,
+  threshold = defaultThreshold,
 ) => {
   const as = typeof a === "string" ? pinyin(a) : a;
   const bs = typeof b === "string" ? pinyin(b) : b;

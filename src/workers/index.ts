@@ -5,6 +5,7 @@ export let findTyposWorker: Worker;
 export let findTyposAsync: (
   article: string,
   refWord: string,
+  options?: { threshold: number },
 ) => Promise<Typo[]>;
 
 if (window.Worker) {
@@ -15,9 +16,9 @@ if (window.Worker) {
     },
   );
 
-  findTyposAsync = (article, refWord) => {
+  findTyposAsync = (article, refWord, options) => {
     return new Promise((resolve, reject) => {
-      findTyposWorker.postMessage([article, refWord]);
+      findTyposWorker.postMessage([article, refWord, options]);
       findTyposWorker.onmessage = function (e) {
         resolve(e.data);
       };
