@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { inputDelimiter } from "src/constants";
 
 export const TargetWordTags: React.FC<
   {
@@ -45,6 +46,12 @@ export const TargetWordsInput: React.FC<
           className="grow"
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          onPaste={(e) => {
+            e.preventDefault();
+            const nouns = e.clipboardData.getData("text").split(inputDelimiter);
+            nouns.forEach((noun) => addNoun(noun.trim()));
+            setValue("");
+          }}
           onKeyDown={(e) => {
             if (e.key.toLocaleUpperCase() === "ENTER") handleConfirm();
           }}

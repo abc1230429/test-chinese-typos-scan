@@ -9,7 +9,7 @@ import {
   TargetWordTags,
 } from "src/components/TargetWordsForm";
 import { isEqual } from "lodash";
-import { defaultThreshold } from "src/constants";
+import { defaultThreshold, inputDelimiter } from "src/constants";
 
 type Setting = {
   threshold: number;
@@ -71,10 +71,13 @@ const Setting: React.FC = () => {
               </div>
             </div>
             <div className="flex w-full">
-              <div className="flex-1 overflow-hidden rounded-box bg-base-300 px-4 py-8">
+              <div className="relative flex-1 overflow-hidden rounded-box bg-base-300 px-4 py-8">
                 <TargetWordsInput
                   addNoun={(noun: string) => {
-                    setTargetNouns((state) => [...state, noun]);
+                    setTargetNouns((state) => {
+                      if (state.includes(noun)) return state;
+                      return [...state, noun];
+                    });
                   }}
                   placeholder="目標詞條"
                 />
@@ -90,6 +93,27 @@ const Setting: React.FC = () => {
                     />
                   </div>
                 </div>
+                <button className="btn pointer-events-none opacity-0"></button>
+                <div className="join absolute bottom-0 left-0 flex w-full">
+                  <button
+                    className="btn join-item flex-1"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        targetNouns.join(inputDelimiter),
+                      );
+                    }}
+                  >
+                    複製全部
+                  </button>
+                  <button
+                    className="btn join-item flex-1"
+                    onClick={() => {
+                      setTargetNouns([]);
+                    }}
+                  >
+                    清除全部
+                  </button>
+                </div>
               </div>
               <div className="divider divider-horizontal">
                 <div>
@@ -98,10 +122,13 @@ const Setting: React.FC = () => {
                   ))}
                 </div>
               </div>
-              <div className="flex-1 overflow-hidden rounded-box bg-base-300 px-4 py-8">
+              <div className="relative flex-1 overflow-hidden rounded-box bg-base-300 px-4 py-8">
                 <TargetWordsInput
                   addNoun={(noun: string) => {
-                    setReservedNouns((state) => [...state, noun]);
+                    setReservedNouns((state) => {
+                      if (state.includes(noun)) return state;
+                      return [...state, noun];
+                    });
                   }}
                   placeholder="指定非錯字"
                 />
@@ -116,6 +143,27 @@ const Setting: React.FC = () => {
                       }}
                     />
                   </div>
+                </div>
+                <button className="btn pointer-events-none opacity-0"></button>
+                <div className="join absolute bottom-0 left-0 flex w-full">
+                  <button
+                    className="btn join-item flex-1"
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        reservedNouns.join(inputDelimiter),
+                      );
+                    }}
+                  >
+                    複製全部
+                  </button>
+                  <button
+                    className="btn join-item flex-1"
+                    onClick={() => {
+                      setReservedNouns([]);
+                    }}
+                  >
+                    清除全部
+                  </button>
                 </div>
               </div>
             </div>

@@ -86,7 +86,7 @@ const Article: React.FC = () => {
   const handleComparison = async () => {
     if (!quill) return;
     setLoading(true);
-    quill.removeFormat(0, quill.getLength());
+    quill.removeFormat(0, quill.getLength() - 1);
 
     const article = quill.getText();
 
