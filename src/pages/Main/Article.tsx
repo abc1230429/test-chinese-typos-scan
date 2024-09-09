@@ -12,6 +12,7 @@ import {
 } from "src/stores/index.ts";
 import { findTyposAsync } from "src/workers/index.ts";
 import { Typo } from "src/types/index.js";
+import { useAlert } from "src/components/ConfirmModal/useConfirm.tsx";
 
 const toggleHighlightClasses = (ele: HTMLSpanElement) => {
   ele.classList.toggle("badge-error");
@@ -28,6 +29,7 @@ const Article: React.FC = () => {
   const reservedNouns = useReservedNounStore((state) => state.nouns);
   const threshold = useSettingStore((state) => state.threshold);
   const [loading, setLoading] = useState(false);
+  const alert = useAlert();
 
   useEffect(() => {
     if (!ref.current) return;

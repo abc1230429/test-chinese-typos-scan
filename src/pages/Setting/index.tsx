@@ -130,7 +130,7 @@ const Setting: React.FC = () => {
                       return [...state, noun];
                     });
                   }}
-                  placeholder="指定非錯字"
+                  placeholder="指定為非錯字"
                 />
                 <div className="overflow-hidden py-4">
                   <div className="flex flex-wrap gap-2">

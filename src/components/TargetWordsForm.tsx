@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { inputDelimiter } from "src/constants";
+import { useConfirm } from "./ConfirmModal/useConfirm";
 
 export const TargetWordTags: React.FC<
   {
@@ -7,14 +8,16 @@ export const TargetWordTags: React.FC<
     removeNoun: (noun: string) => void;
   } & React.ButtonHTMLAttributes<HTMLButtonElement>
 > = ({ nouns, removeNoun, ...buttonProps }) => {
+  const confirm = useConfirm();
+
   return (
     <>
       {nouns.map((noun) => (
         <button
           key={noun}
           className="btn btn-ghost px-2"
-          onClick={() => {
-            const result = confirm(`要移除名字：${noun} 嗎？`);
+          onClick={async () => {
+            const result = await confirm(`要移除名字：${noun} 嗎？`);
             if (result) removeNoun(noun);
           }}
           {...buttonProps}
