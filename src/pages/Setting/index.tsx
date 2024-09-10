@@ -9,18 +9,16 @@ import {
   TargetWordTags,
 } from "src/components/TargetWordsForm";
 import { isEqual } from "lodash";
-import { defaultThreshold, inputDelimiter } from "src/constants";
+import { inputDelimiter } from "src/constants";
 
 type Setting = {
   threshold: number;
+  couldShuffle: boolean;
 };
 
 const Setting: React.FC = () => {
   const ref = useRef<HTMLDialogElement>(null);
 
-  const [setting, setSetting] = useState<Setting>({
-    threshold: defaultThreshold,
-  });
   const [targetNouns, setTargetNouns] = useState<string[]>([]);
   const [reservedNouns, setReservedNouns] = useState<string[]>([]);
 
@@ -30,9 +28,17 @@ const Setting: React.FC = () => {
   const setReservedNounsStore = useReservedNounStore((state) => state.setNouns);
   const settingStore = useSettingStore();
 
+  const [setting, setSetting] = useState<Setting>({
+    threshold: settingStore.threshold,
+    couldShuffle: settingStore.couldShuffle,
+  });
+
   const openModal = () => {
     if (ref.current) ref.current.showModal();
-    setSetting({ threshold: settingStore.threshold });
+    setSetting({
+      threshold: settingStore.threshold,
+      couldShuffle: settingStore.couldShuffle,
+    });
     setTargetNouns(targetNounsStore);
     setReservedNouns(reservedNounsStore);
   };
@@ -41,6 +47,7 @@ const Setting: React.FC = () => {
     setTargetNounsStore(targetNouns);
     setReservedNounsStore(reservedNouns);
     settingStore.setThreshold(setting.threshold);
+    settingStore.setCouldShuffle(setting.couldShuffle);
   };
 
   return (
@@ -52,7 +59,7 @@ const Setting: React.FC = () => {
         <div className=" modal-box flex h-full max-w-3xl flex-col">
           <h3 className="text-lg font-bold">更多設定</h3>
           <div className="grid flex-1 grid-cols-1 grid-rows-[auto_1fr] pt-4">
-            <div className="grid sm:grid-cols-2 pb-8">
+            <div className="grid grid-cols-1 grid-rows-2 pb-8 sm:grid-cols-2 sm:grid-rows-1">
               <div className="form-control">
                 <span className="label-text pb-2 text-lg">
                   閥值: {setting.threshold}
@@ -65,9 +72,28 @@ const Setting: React.FC = () => {
                   value={setting.threshold}
                   className="range range-primary range-xs"
                   onChange={(e) => {
-                    setSetting({ threshold: Number(e.target.value) });
+                    setSetting((state) => ({
+                      ...state,
+                      threshold: Number(e.target.value),
+                    }));
                   }}
                 />
+              </div>
+              <div className="form-control">
+                <label className="label h-full cursor-pointer justify-start gap-4 px-0 pb-0 sm:justify-center">
+                  <span className="label-text text-lg">檢查字序調換</span>
+                  <input
+                    type="checkbox"
+                    checked={setting.couldShuffle}
+                    className="checkbox-primary checkbox"
+                    onChange={(e) => {
+                      setSetting((state) => ({
+                        ...state,
+                        couldShuffle: e.target.checked,
+                      }));
+                    }}
+                  />
+                </label>
               </div>
             </div>
             <div className="flex w-full flex-col overflow-hidden sm:flex-row">
@@ -175,6 +201,7 @@ const Setting: React.FC = () => {
                 className="btn btn-primary"
                 disabled={
                   setting.threshold === settingStore.threshold &&
+                  setting.couldShuffle === settingStore.couldShuffle &&
                   isEqual(targetNouns, targetNounsStore) &&
                   isEqual(reservedNouns, reservedNounsStore)
                 }

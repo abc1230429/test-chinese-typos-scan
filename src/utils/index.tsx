@@ -4,23 +4,22 @@ import { pinyin } from "./pinyin";
 import { defaultThreshold } from "src/constants";
 
 export const chineseFuzzyEqual = (
-  a: string | string[][],
-  b: string | string[][],
+  a: string,
+  b: string,
   threshold = defaultThreshold,
 ) => {
-  const as = typeof a === "string" ? pinyin(a) : a;
-  const bs = typeof b === "string" ? pinyin(b) : b;
-  const allRatio = as.flatMap((v) =>
-    bs.map((u) => {
+  const as = pinyin(a);
+  const bs = pinyin(b);
+  for (const v of as) {
+    for (const u of bs) {
       const vs = v.join(" ");
       const us = u.join(" ");
       const d = distance(vs, us);
       const ratio = d / Math.min(vs.length, us.length);
-      return ratio;
-    }),
-  );
-  const minRatio = Math.min(...allRatio);
-  return minRatio <= threshold;
+      if (ratio <= threshold) return true;
+    }
+  }
+  return false;
 };
 
 export const wrapHtmlString = (

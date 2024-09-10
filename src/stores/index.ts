@@ -57,14 +57,23 @@ export const useReservedNounStore = create<
 );
 
 export const useSettingStore = create<
-  { threshold: number; setThreshold: (threshold: number) => void },
+  {
+    threshold: number;
+    setThreshold: (threshold: number) => void;
+    couldShuffle: boolean;
+    setCouldShuffle: (couldShuffle: boolean) => void;
+  },
   [["zustand/persist", NounStore]]
 >(
   persist(
     (set) => ({
       threshold: defaultThreshold,
-      setThreshold: (threshold: number) => {
+      setThreshold: (threshold) => {
         set(() => ({ threshold }));
+      },
+      couldShuffle: false,
+      setCouldShuffle: (couldShuffle) => {
+        set(() => ({ couldShuffle }));
       },
     }),
     { name: "setting" },

@@ -27,7 +27,7 @@ const Article: React.FC = () => {
   const [quill, setQuill] = useState<Quill | null>(null);
   const nouns = useTargetNounStore((state) => state.nouns);
   const reservedNouns = useReservedNounStore((state) => state.nouns);
-  const threshold = useSettingStore((state) => state.threshold);
+  const { threshold, couldShuffle } = useSettingStore();
   const [loading, setLoading] = useState(false);
   const alert = useAlert();
 
@@ -83,7 +83,10 @@ const Article: React.FC = () => {
     const typos: Typo[] = [];
     for (const noun of nouns) {
       try {
-        const newTypos = await findTyposAsync(article, noun, { threshold });
+        const newTypos = await findTyposAsync(article, noun, {
+          threshold,
+          couldShuffle,
+        });
         typos.push(...newTypos);
       } catch (err) {
         console.error(err);

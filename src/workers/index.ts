@@ -3,7 +3,7 @@ import { Typo } from "src/types";
 export const findTyposAsync: (
   article: string,
   refWord: string,
-  options?: { threshold: number },
+  options?: { threshold: number; couldShuffle: boolean },
 ) => Promise<Typo[]> = (article, refWord, options) => {
   const findTyposWorker = new Worker(
     new URL("./findTyposOfArticle.ts", import.meta.url),
