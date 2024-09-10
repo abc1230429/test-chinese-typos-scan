@@ -51,8 +51,8 @@ const Setting: React.FC = () => {
       <dialog ref={ref} style={{ scrollbarGutter: "stable" }} className="modal">
         <div className=" modal-box flex h-full max-w-3xl flex-col">
           <h3 className="text-lg font-bold">更多設定</h3>
-          <div className="grid flex-grow grid-cols-1 grid-rows-[auto_1fr] pt-4">
-            <div className="grid grid-cols-3 pb-8">
+          <div className="grid flex-1 grid-cols-1 grid-rows-[auto_1fr] pt-4">
+            <div className="grid sm:grid-cols-2 pb-8">
               <div className="form-control">
                 <span className="label-text pb-2 text-lg">
                   閥值: {setting.threshold}
@@ -70,8 +70,8 @@ const Setting: React.FC = () => {
                 />
               </div>
             </div>
-            <div className="flex w-full">
-              <div className="relative flex-1 overflow-hidden rounded-box bg-base-300 px-4 py-8">
+            <div className="flex w-full flex-col overflow-hidden sm:flex-row">
+              <div className="relative flex-1 overflow-visible rounded-box bg-base-300 px-4 py-8 sm:overflow-x-hidden">
                 <TargetWordsInput
                   addNoun={(noun: string) => {
                     setTargetNouns((state) => {
@@ -81,7 +81,7 @@ const Setting: React.FC = () => {
                   }}
                   placeholder="目標詞條"
                 />
-                <div className="overflow-hidden py-4">
+                <div className="py-4">
                   <div className="flex flex-wrap gap-2">
                     <TargetWordTags
                       nouns={targetNouns}
@@ -93,7 +93,6 @@ const Setting: React.FC = () => {
                     />
                   </div>
                 </div>
-                <button className="btn pointer-events-none opacity-0"></button>
                 <div className="join absolute bottom-0 left-0 flex w-full">
                   <button
                     className="btn join-item flex-1"
@@ -115,14 +114,15 @@ const Setting: React.FC = () => {
                   </button>
                 </div>
               </div>
-              <div className="divider divider-horizontal">
-                <div>
+              <div className="divider sm:divider-horizontal">
+                <div className=" hidden sm:block">
                   {"排除右側".split("").map((c) => (
                     <div key={c}>{c}</div>
                   ))}
                 </div>
+                <div className="sm:hidden">排除下方</div>
               </div>
-              <div className="relative flex-1 overflow-hidden rounded-box bg-base-300 px-4 py-8">
+              <div className="relative flex-1 overflow-visible rounded-box bg-base-300 px-4 py-8 sm:overflow-x-hidden">
                 <TargetWordsInput
                   addNoun={(noun: string) => {
                     setReservedNouns((state) => {
@@ -132,7 +132,7 @@ const Setting: React.FC = () => {
                   }}
                   placeholder="指定為非錯字"
                 />
-                <div className="overflow-hidden py-4">
+                <div className="py-4">
                   <div className="flex flex-wrap gap-2">
                     <TargetWordTags
                       nouns={reservedNouns}
@@ -144,7 +144,6 @@ const Setting: React.FC = () => {
                     />
                   </div>
                 </div>
-                <button className="btn pointer-events-none opacity-0"></button>
                 <div className="join absolute bottom-0 left-0 flex w-full">
                   <button
                     className="btn join-item flex-1"

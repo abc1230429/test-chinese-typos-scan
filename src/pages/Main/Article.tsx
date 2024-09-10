@@ -41,18 +41,6 @@ const Article: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    const resize = () => {
-      if (!ref.current) return;
-      ref.current.style.height = "500px";
-      const parentHeight = ref.current.parentElement?.scrollHeight || 500;
-      ref.current.style.height = `calc(${parentHeight}px - 1rem)`;
-    };
-    resize();
-    window.addEventListener("resize", resize);
-    return () => window.removeEventListener("resize", resize);
-  }, [quill]);
-
-  useEffect(() => {
     if (!quill) return;
     const setIndexOnSelect = (event: { index: number }) => {
       if (!event) return;
@@ -123,18 +111,18 @@ const Article: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="h-full flex-grow pb-4">
+    <div className="flex flex-1 flex-col overflow-auto">
+      <div className="flex-1 overflow-auto pb-4">
         <div ref={ref} className="h-full" />
       </div>
 
       <div className="flex w-full justify-between">
-        <div className="join flex-1">
+        <div className="join flex-1 basis-32 sm:basis-0">
           {!!typos.length && (
             <>
               <button
                 disabled={index < 1}
-                className="btn join-item btn-neutral"
+                className="btn join-item btn-neutral btn-sm sm:btn-md"
                 onClick={() => {
                   const newIndex = touchedRef.current ? index : index - 1;
                   setIndex(newIndex);
@@ -144,7 +132,7 @@ const Article: React.FC = () => {
                 «
               </button>
               <button
-                className="btn join-item btn-neutral"
+                className="btn join-item btn-neutral btn-sm sm:btn-md"
                 onClick={() => {
                   goToIndex(index);
                 }}
@@ -161,7 +149,7 @@ const Article: React.FC = () => {
               </button>
               <button
                 disabled={index >= typos.length - 1}
-                className="btn join-item btn-neutral"
+                className="btn join-item btn-neutral btn-sm sm:btn-md"
                 onClick={() => {
                   const newIndex = index + 1;
                   setIndex(newIndex);
@@ -173,12 +161,12 @@ const Article: React.FC = () => {
             </>
           )}
         </div>
-        <div className="flex flex-1 justify-center">
+        <div className="flex flex-1 justify-end sm:justify-center">
           <TyposModal typos={typos} />
         </div>
         <div className="flex flex-1 justify-end">
           <button
-            className="btn btn-primary text-primary-content"
+            className="btn btn-primary btn-sm text-primary-content sm:btn-md"
             onClick={handleComparison}
             disabled={!nouns.length || loading}
           >
