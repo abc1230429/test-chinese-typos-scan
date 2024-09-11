@@ -3,7 +3,7 @@ import { highlightTypoCharJsx } from "src/utils";
 import TyposModal from "./TyposModal";
 import Quill from "quill";
 import "./quill.ts";
-import { findIndex } from "lodash";
+import { clamp, findIndex } from "lodash";
 import { setupQuill } from "./quill.ts";
 import {
   useReservedNounStore,
@@ -80,18 +80,32 @@ const Article: React.FC = () => {
 
     const article = quill.getText();
 
+    console.time("process");
+    let index = 0;
     const typos: Typo[] = [];
-    for (const noun of nouns) {
-      try {
-        const newTypos = await findTyposAsync(article, noun, {
-          threshold,
-          couldShuffle,
+    const createThread: () => Promise<void> = () => {
+      const noun = nouns[index];
+      if (!noun) return Promise.resolve();
+      index++;
+      return findTyposAsync(article, noun, {
+        threshold,
+        couldShuffle,
+      })
+        .then((newTypos) => {
+          typos.push(...newTypos);
+        })
+        .catch(console.error)
+        .finally(() => {
+          if (index < nouns.length) return createThread();
         });
-        typos.push(...newTypos);
-      } catch (err) {
-        console.error(err);
-      }
-    }
+    };
+
+    const cpuNum = navigator.hardwareConcurrency || 8;
+    const maxWorker = clamp(Math.ceil(cpuNum / 2), 1, 10);
+    const tasks = [];
+    for (let i = 0; i < maxWorker; i++) tasks.push(createThread());
+    await Promise.all(tasks);
+    console.timeEnd("process");
 
     const validTypos = typos
       .filter(

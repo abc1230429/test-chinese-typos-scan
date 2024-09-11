@@ -12,7 +12,6 @@ export const findTyposAsync: (
     },
   );
   return new Promise((resolve, reject) => {
-    findTyposWorker.postMessage([article, refWord, options]);
     findTyposWorker.onmessage = function (e) {
       resolve(e.data);
       findTyposWorker.terminate();
@@ -21,5 +20,6 @@ export const findTyposAsync: (
       reject(e);
       findTyposWorker.terminate();
     };
+    findTyposWorker.postMessage([article, refWord, options]);
   });
 };
