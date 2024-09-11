@@ -1,3 +1,3 @@
-export const defaultThreshold = 0.12;
+export const defaultThreshold = 0.13;
 
 export const inputDelimiter = "; ";

@@ -15,7 +15,7 @@ export const chineseFuzzyEqual = (
       const vs = v.join(" ");
       const us = u.join(" ");
       const d = distance(vs, us);
-      const ratio = d / Math.min(vs.length, us.length);
+      const ratio = d / vs.length;
       if (ratio <= threshold) return true;
     }
   }

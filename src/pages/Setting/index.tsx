@@ -67,7 +67,7 @@ const Setting: React.FC = () => {
                 <input
                   type="range"
                   min={0}
-                  max={0.4}
+                  max={0.3}
                   step={0.01}
                   value={setting.threshold}
                   className="range range-primary range-xs"
