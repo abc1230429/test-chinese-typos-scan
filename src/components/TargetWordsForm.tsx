@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { inputDelimiter } from "src/constants";
-import { useConfirm } from "./ConfirmModal/useConfirm";
+import { useConfirm } from "./ConfirmModal";
 
 export const TargetWordTags: React.FC<
   {

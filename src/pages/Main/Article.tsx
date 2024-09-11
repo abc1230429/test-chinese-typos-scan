@@ -12,7 +12,7 @@ import {
 } from "src/stores/index.ts";
 import { findTyposAsync } from "src/workers/index.ts";
 import { Typo } from "src/types/index.js";
-import { useAlert } from "src/components/ConfirmModal/useConfirm.tsx";
+import { useAlert } from "src/components/ConfirmModal";
 
 const toggleHighlightClasses = (ele: HTMLSpanElement) => {
   ele.classList.toggle("badge-error");

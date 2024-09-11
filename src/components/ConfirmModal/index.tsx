@@ -1,69 +1,42 @@
-import { useRef, useState, createContext } from "react";
+import { useEffect, useRef } from "react";
+import { createRoot } from "react-dom/client";
+import ConfirmModal from "./component";
 
-export type Options = {
-  alert: boolean;
+export type ModalMethods = {
+  modalRef: React.RefObject<HTMLDialogElement>;
+  open: () => void;
+  close: () => void;
+  setContent: React.Dispatch<React.SetStateAction<React.ReactNode>>;
+  setHandler: React.Dispatch<React.SetStateAction<(result: unknown) => void>>;
 };
 
-export const ConfirmContext = createContext<
-  | {
-      ref: React.RefObject<HTMLDialogElement>;
-      resolveRef: React.MutableRefObject<(result: boolean) => void>;
-      setText: (text: string) => void;
-      setOptions: React.Dispatch<React.SetStateAction<Options>>;
-    }
-  | undefined
->(undefined);
+export const useConfirm = (options?: { isAlert: boolean }) => {
+  const ref = useRef<ModalMethods>(null);
 
-const ConfirmModalProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const ref = useRef<HTMLDialogElement>(null);
-  const resolveRef = useRef<(result: boolean) => void>(() => {});
-  const [text, setText] = useState("");
-  const [options, setOptions] = useState<Options>({ alert: false });
+  useEffect(() => {
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    root.render(<ConfirmModal ref={ref} options={options} />);
+    return () => {
+      requestAnimationFrame(() => {
+        root.unmount();
+        document.body.removeChild(container);
+      });
+    };
+  }, []);
 
-  return (
-    <ConfirmContext.Provider
-      value={{
-        ref,
-        resolveRef,
-        setText,
-        setOptions,
-      }}
-    >
-      <dialog className="modal" ref={ref}>
-        <div className="modal-box">
-          <h3 className="text-lg font-bold"></h3>
-          <p className="py-4">{text}</p>
-          <div className="">
-            <form method="dialog" className="modal-action gap-3">
-              {options.alert ? null : (
-                <button
-                  className="btn btn-ghost"
-                  onClick={() => {
-                    ref.current?.close();
-                    resolveRef.current(false);
-                  }}
-                >
-                  取消
-                </button>
-              )}
-              <button
-                className="btn btn-ghost"
-                onClick={() => {
-                  ref.current?.close();
-                  resolveRef.current(true);
-                }}
-              >
-                確認
-              </button>
-            </form>
-          </div>
-        </div>
-      </dialog>
-      {children}
-    </ConfirmContext.Provider>
-  );
+  const confirm = (content: React.ReactNode) => {
+    if (!ref.current) return Promise.resolve();
+    ref.current.setContent(content);
+    ref.current.open();
+    return new Promise<boolean>((r) => ref.current?.setHandler(() => r));
+  };
+
+  return confirm;
 };
 
-export default ConfirmModalProvider;
+export const useAlert = () => {
+  const alert = useConfirm({ isAlert: true });
+  return alert;
+};
