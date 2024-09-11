@@ -18,7 +18,7 @@ const Info = () => {
       >
         <div className="modal-box">
           <h3 className="text-lg font-bold">說明</h3>
-          <p className="py-4 [&>p]:mt-2 [&_b]:mx-1">
+          <div className="py-4 [&>p]:mt-2 [&_b]:mx-1">
             <p>依照拼音搜尋文章中可能的選字錯誤。</p>
             <br />
             <p>
@@ -35,7 +35,7 @@ const Info = () => {
             <p>
               所有計算都在使用者瀏覽器中完成，過程中不會傳輸任何資料，請安心使用。
             </p>
-          </p>
+          </div>
           <div className="modal-action">
             <form method="dialog">
               <button className="btn">關閉</button>

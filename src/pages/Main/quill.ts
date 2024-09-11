@@ -30,5 +30,18 @@ export const setupQuill = (dom: HTMLDivElement) => {
       quillInst.root.classList.remove("ql-blank");
     }
   });
+  // clear format on paste
+  quillInst.clipboard.addMatcher(Node.ELEMENT_NODE, (_, delta) => {
+    const ops: { insert: string }[] = [];
+    delta.ops.forEach((op) => {
+      if (op.insert && typeof op.insert === "string") {
+        ops.push({
+          insert: op.insert,
+        });
+      }
+    });
+    delta.ops = ops;
+    return delta;
+  });
   return quillInst;
 };
