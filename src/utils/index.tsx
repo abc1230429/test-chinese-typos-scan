@@ -22,6 +22,23 @@ export const chineseFuzzyEqual = (
   return false;
 };
 
+export const createFuzzyEqualTo = (a: string) => {
+  const as = pinyin(a);
+  const aAll = as.map((v) => v.join(" "));
+  return (b: string, threshold = defaultThreshold) => {
+    const bs = pinyin(b);
+    for (const v of aAll) {
+      for (const u of bs) {
+        const us = u.join(" ");
+        const d = distance(v, us);
+        const ratio = d / v.length;
+        if (ratio <= threshold) return true;
+      }
+    }
+    return false;
+  };
+};
+
 export const wrapHtmlString = (
   str: string,
   type: string,

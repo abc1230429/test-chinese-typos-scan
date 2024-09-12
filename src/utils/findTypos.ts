@@ -1,7 +1,7 @@
 import { escape, pullAt, some } from "lodash";
 import { defaultThreshold } from "src/constants";
 import { Typo } from "src/types";
-import { chineseFuzzyEqual } from "src/utils";
+import { chineseFuzzyEqual, createFuzzyEqualTo } from "src/utils";
 
 export const findTypos = (
   article: string,
@@ -16,7 +16,9 @@ export const findTypos = (
       acc[curr] = true;
       return acc;
     }, {});
-  const regex = /[，。「」\n]/;
+  const regex = /[，。、！？：「」─…\n]/;
+
+  const fuzzyEqualTo = createFuzzyEqualTo(refWord);
 
   for (let i = 0; i < article.length; i++) {
     const compareWord = article.slice(i, i + wLen).trim();
@@ -55,8 +57,7 @@ export const findTypos = (
       });
     };
 
-    const isFuzzyEqual = () =>
-      chineseFuzzyEqual(compareWord, refWord, threshold);
+    const isFuzzyEqual = () => fuzzyEqualTo(compareWord, threshold);
 
     if (isWrongOrder() || isFuzzyEqual()) {
       const id = `typo-${i}`;
