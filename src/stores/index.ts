@@ -63,7 +63,7 @@ export const useSettingStore = create<
     couldShuffle: boolean;
     setCouldShuffle: (couldShuffle: boolean) => void;
   },
-  [["zustand/persist", NounStore]]
+  [["zustand/persist", []]]
 >(
   persist(
     (set) => ({
@@ -77,5 +77,23 @@ export const useSettingStore = create<
       },
     }),
     { name: "setting" },
+  ),
+);
+
+export const useThemeStore = create<
+  {
+    theme: string;
+    setTheme: (theme: string) => void;
+  },
+  [["zustand/persist", []]]
+>(
+  persist(
+    (set) => ({
+      theme: "default",
+      setTheme: (theme) => {
+        set(() => ({ theme }));
+      },
+    }),
+    { name: "theme" },
   ),
 );

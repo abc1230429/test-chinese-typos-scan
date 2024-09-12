@@ -10,6 +10,7 @@ import {
 } from "src/components/TargetWordsForm";
 import { isEqual } from "lodash";
 import { inputDelimiter } from "src/constants";
+import ThemeController from "src/components/ThemeController";
 
 type Setting = {
   threshold: number;
@@ -57,7 +58,10 @@ const Setting: React.FC = () => {
       </button>
       <dialog ref={ref} style={{ scrollbarGutter: "stable" }} className="modal">
         <div className=" modal-box flex h-full max-w-3xl flex-col">
-          <h3 className="text-lg font-bold">更多設定</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-lg font-bold">更多設定</h3>
+            <ThemeController />
+          </div>
           <div className="grid flex-1 grid-cols-1 grid-rows-[auto_1fr] pt-4">
             <div className="grid grid-cols-1 grid-rows-2 pb-8 sm:grid-cols-2 sm:grid-rows-1">
               <div className="form-control">
