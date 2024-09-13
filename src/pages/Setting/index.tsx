@@ -53,7 +53,7 @@ const Setting: React.FC = () => {
 
   return (
     <div>
-      <button className="btn btn-neutral" onClick={openModal}>
+      <button className="btn-rwd btn btn-neutral" onClick={openModal}>
         更多設定
       </button>
       <dialog ref={ref} style={{ scrollbarGutter: "stable" }} className="modal">
@@ -63,9 +63,9 @@ const Setting: React.FC = () => {
             <ThemeController />
           </div>
           <div className="grid flex-1 grid-cols-1 grid-rows-[auto_1fr] pt-4">
-            <div className="grid grid-cols-1 grid-rows-2 pb-8 sm:grid-cols-2 sm:grid-rows-1">
+            <div className="grid grid-cols-1 grid-rows-2 pb-4 sm:grid-cols-2 sm:grid-rows-1 sm:pb-8">
               <div className="form-control">
-                <span className="label-text pb-2 text-lg">
+                <span className="label-text pb-2 sm:text-lg">
                   閥值: {setting.threshold}
                 </span>
                 <input
@@ -85,11 +85,11 @@ const Setting: React.FC = () => {
               </div>
               <div className="form-control">
                 <label className="label h-full cursor-pointer justify-start gap-4 px-0 pb-0 sm:justify-center">
-                  <span className="label-text text-lg">檢查字序調換</span>
+                  <span className="label-text sm:text-lg">檢查字序調換</span>
                   <input
                     type="checkbox"
                     checked={setting.couldShuffle}
-                    className="checkbox-primary checkbox"
+                    className="checkbox-primary checkbox checkbox-sm sm:checkbox-md"
                     onChange={(e) => {
                       setSetting((state) => ({
                         ...state,
@@ -111,7 +111,7 @@ const Setting: React.FC = () => {
                   }}
                   placeholder="目標詞條"
                 />
-                <div className="py-4">
+                <div className="mb-4 py-4">
                   <div className="flex flex-wrap gap-2">
                     <TargetWordTags
                       nouns={targetNouns}
@@ -125,7 +125,7 @@ const Setting: React.FC = () => {
                 </div>
                 <div className="join absolute bottom-0 left-0 flex w-full">
                   <button
-                    className="btn join-item flex-1"
+                    className="btn-rwd btn join-item flex-1"
                     onClick={() => {
                       navigator.clipboard.writeText(
                         targetNouns.join(inputDelimiter),
@@ -135,7 +135,7 @@ const Setting: React.FC = () => {
                     複製全部
                   </button>
                   <button
-                    className="btn join-item flex-1"
+                    className="btn-rwd btn join-item flex-1"
                     onClick={() => {
                       setTargetNouns([]);
                     }}
@@ -162,7 +162,7 @@ const Setting: React.FC = () => {
                   }}
                   placeholder="指定為非錯字"
                 />
-                <div className="py-4">
+                <div className="mb-4 py-4">
                   <div className="flex flex-wrap gap-2">
                     <TargetWordTags
                       nouns={reservedNouns}
@@ -176,7 +176,7 @@ const Setting: React.FC = () => {
                 </div>
                 <div className="join absolute bottom-0 left-0 flex w-full">
                   <button
-                    className="btn join-item flex-1"
+                    className="btn-rwd btn join-item flex-1"
                     onClick={() => {
                       navigator.clipboard.writeText(
                         reservedNouns.join(inputDelimiter),
@@ -186,7 +186,7 @@ const Setting: React.FC = () => {
                     複製全部
                   </button>
                   <button
-                    className="btn join-item flex-1"
+                    className="btn-rwd btn join-item flex-1"
                     onClick={() => {
                       setReservedNouns([]);
                     }}

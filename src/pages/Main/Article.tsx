@@ -139,7 +139,7 @@ const Article: React.FC = () => {
             <>
               <button
                 disabled={index < 1}
-                className="btn join-item btn-neutral btn-sm sm:btn-md"
+                className="btn-rwd btn join-item btn-neutral"
                 onClick={() => {
                   const newIndex = touchedRef.current ? index : index - 1;
                   setIndex(newIndex);
@@ -149,7 +149,7 @@ const Article: React.FC = () => {
                 «
               </button>
               <button
-                className="btn join-item btn-neutral btn-sm sm:btn-md"
+                className="btn-rwd btn join-item btn-neutral"
                 onClick={() => {
                   goToIndex(index);
                 }}
@@ -166,7 +166,7 @@ const Article: React.FC = () => {
               </button>
               <button
                 disabled={index >= typos.length - 1}
-                className="btn join-item btn-neutral btn-sm sm:btn-md"
+                className="btn-rwd btn join-item btn-neutral"
                 onClick={() => {
                   const newIndex = index + 1;
                   setIndex(newIndex);
@@ -183,7 +183,7 @@ const Article: React.FC = () => {
         </div>
         <div className="flex flex-1 justify-end">
           <button
-            className="btn btn-primary btn-sm text-primary-content sm:btn-md"
+            className="btn-rwd btn btn-primary text-primary-content"
             onClick={handleComparison}
             disabled={!nouns.length || loading}
           >

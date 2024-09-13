@@ -9,7 +9,7 @@ const TyposModal: React.FC<{ typos: Typo[] }> = memo(({ typos }) => {
     <>
       {!!typos.length && (
         <button
-          className="btn btn-neutral btn-sm sm:btn-md"
+          className="btn-rwd btn btn-neutral"
           onClick={() =>
             document
               .querySelector<HTMLDialogElement>("#typos-modal")

@@ -5,3 +5,9 @@
 html {
   scrollbar-gutter: stable;
 }
+
+@layer components {
+  .btn-rwd {
+    @apply btn-sm sm:btn-md;
+  }
+}

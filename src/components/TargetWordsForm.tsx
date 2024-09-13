@@ -15,7 +15,7 @@ export const TargetWordTags: React.FC<
       {nouns.map((noun) => (
         <button
           key={noun}
-          className="btn btn-ghost px-2"
+          className="btn-rwd btn btn-ghost px-2"
           onClick={async () => {
             const result = await confirm(`要移除名字：${noun} 嗎？`);
             if (result) removeNoun(noun);
@@ -42,7 +42,7 @@ export const TargetWordsInput: React.FC<
   };
   return (
     <label
-      className={`input input-bordered flex items-center gap-2 ${className}`}
+      className={`input input-sm input-bordered flex items-center gap-2 sm:input-md ${className}`}
     >
       <input
         type="text"
@@ -61,7 +61,10 @@ export const TargetWordsInput: React.FC<
         }}
         {...inputProps}
       />
-      <button className="btn btn-circle btn-sm" onClick={handleConfirm}>
+      <button
+        className="btn btn-circle btn-xs sm:btn-sm"
+        onClick={handleConfirm}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

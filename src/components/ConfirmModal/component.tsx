@@ -35,7 +35,7 @@ const ConfirmModal = forwardRef<
               </button>
             )}
             <button
-              className="btn btn-ghost"
+              className={`btn ${!options.isAlert ? "btn-ghost" : ""}`}
               onClick={() => {
                 handler(true);
               }}
